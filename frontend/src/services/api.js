@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://https://villagemart-9wtl.onrender.com.onrender.com/api/', // Paste Render URL here
-  timeout: 10000,
+  baseURL: 'https://villagemart-9wtl.onrender.com', // Your live backend URL
+  timeout: 15000, 
   headers: {
     'Content-Type': 'application/json',
   }
