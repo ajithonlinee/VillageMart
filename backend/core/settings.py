@@ -103,11 +103,12 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 
+
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Enable WhiteNoise to efficiently serve storage files in production
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Use standard WhiteNoise storage engine to bypass manifest errors
+STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 # Media files configuration for product images
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
