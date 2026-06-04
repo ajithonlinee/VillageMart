@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-// Configure global instance pointing to our running Django backend server
 const API = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/',
+  baseURL: 'https://https://villagemart-9wtl.onrender.com.onrender.com/api/', // Paste Render URL here
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
