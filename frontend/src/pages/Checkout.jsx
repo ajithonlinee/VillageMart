@@ -51,7 +51,8 @@ function Checkout({ cart, clearCart }) {
       navigate('/');
     } catch (error) {
       console.error("Checkout API error log trace context:", error.response?.data || error.message);
-      alert("Failed to initialize checkout sequence. Redirecting to instant payment app layout...");
+      
+      // Fallback direct redirection route trigger to process immediate collection safely
       window.location.href = upiUrl;
     } finally {
       setLoading(false);
@@ -115,7 +116,7 @@ function Checkout({ cart, clearCart }) {
                 required
                 rows="3"
                 value={formData.address}
-                onChange={handleInputChange} /* <--- FIXED: Added onChange handler back */
+                onChange={handleInputChange}
                 placeholder="House Number, Street Name, Landmark details..." 
                 className="w-full border-2 border-gray-100 rounded-xl px-3 py-2.5 text-xs font-bold text-gray-800 focus:border-[#0C831F] outline-none transition-all resize-none"
               ></textarea>
