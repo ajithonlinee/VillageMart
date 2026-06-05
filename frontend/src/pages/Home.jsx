@@ -50,17 +50,6 @@ function Home({ addToCart, cart, updateQuantity, globalSearch }) {
     );
   }
 
-  const getCategoryEmoji = (name) => {
-    const lower = name.toLowerCase();
-    if (lower.includes('milk') || lower.includes('dairy')) return '🥛';
-    if (lower.includes('vegetable') || lower.includes('fruit')) return '🥦';
-    if (lower.includes('rice') || lower.includes('grain') || lower.includes('dal') || lower.includes('food')) return '🌾';
-    if (lower.includes('oil') || lower.includes('ghee')) return '🛢️';
-    if (lower.includes('snack') || lower.includes('biscuit')) return '🍪';
-    if (lower.includes('drink') || lower.includes('juice')) return '🧃';
-    return '📦';
-  };
-
   return (
     <div className="flex gap-4 min-h-[calc(100vh-140px)] mt-1 items-start px-2 md:px-0">
       
@@ -74,15 +63,12 @@ function Home({ addToCart, cart, updateQuantity, globalSearch }) {
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`w-full text-left px-3.5 py-3 rounded-xl font-black text-xs uppercase tracking-wide transition-all flex items-center space-x-3 border ${
+                  className={`w-full text-left px-4 py-3 rounded-xl font-black text-xs uppercase tracking-wide transition-all block border ${
                     isActive 
                       ? 'bg-gradient-to-r from-green-50 to-green-100/60 text-[#0C831F] border-l-4 border-[#0C831F]' 
                       : 'text-gray-600 border-transparent hover:bg-gray-50'
                   }`}
                 >
-                  <span className={`text-xl p-1 rounded-lg ${isActive ? 'bg-white' : 'bg-gray-50'}`}>
-                    {getCategoryEmoji(cat.name)}
-                  </span>
                   <span className="truncate">{cat.name}</span>
                 </button>
               );
@@ -119,7 +105,7 @@ function Home({ addToCart, cart, updateQuantity, globalSearch }) {
                     : 'bg-gray-100 text-gray-600 border-transparent'
                 }`}
               >
-                {getCategoryEmoji(cat.name)} {cat.name}
+                {cat.name}
               </button>
             ))}
           </div>
