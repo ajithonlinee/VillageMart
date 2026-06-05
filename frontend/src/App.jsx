@@ -54,22 +54,22 @@ function App() {
       <div className="min-h-screen flex flex-col selection:bg-yellow-200">
         
         {/* Top Promotional Bar */}
-        <div className="bg-[#1C2028] text-white text-center py-1.5 text-[11px] font-black tracking-wide uppercase px-4 flex items-center justify-center space-x-2">
-          <span>⚡ SUPER SAVER WEEK — GET FREE DELIVERY ON ALL VILLAGE ORDERS TODAY! ⚡</span>
+        <div className="bg-[#1C2028] text-white text-center py-1.5 text-[9px] sm:text-[11px] font-black tracking-wide uppercase px-2 flex items-center justify-center space-x-2 shrink-0">
+          <span>⚡ SUPER SAVER WEEK — FREE DELIVERY TODAY! ⚡</span>
         </div>
 
         {/* Sticky Blinkit High-Contrast Header */}
         <header className="bg-[#FFF] border-b-2 border-yellow-300 sticky top-0 z-40 shadow-md">
-          <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
             
             {/* Branding Logo Block */}
-            <div className="flex items-center space-x-6 shrink-0">
-              <Link to="/" className="text-3xl font-extrabold tracking-tighter select-none flex items-center">
-                <span className="bg-[#F7D10A] text-black px-3 py-1 rounded-xl shadow-xs border border-black/10">village</span>
-                <span className="text-[#0C831F] font-black ml-1.5">mart</span>
+            <div className="flex items-center space-x-2 sm:space-x-6 shrink-0">
+              <Link to="/" className="text-xl sm:text-3xl font-extrabold tracking-tighter select-none flex items-center">
+                <span className="bg-[#F7D10A] text-black px-2 sm:px-3 py-1 rounded-xl shadow-xs border border-black/10">village</span>
+                <span className="text-[#0C831F] font-black ml-1 sm:ml-1.5">mart</span>
               </Link>
               
-              {/* Location Badge */}
+              {/* Location Badge (Hidden on mobile to save space) */}
               <div className="hidden lg:block bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5">
                 <p className="text-[10px] font-black text-[#0C831F] uppercase tracking-wider">⏱️ 20 MINS DELIVERY</p>
                 <p className="text-xs font-bold text-gray-800 truncate max-w-[150px]">Kunavaram, AP</p>
@@ -83,52 +83,57 @@ function App() {
                 type="text"
                 value={globalSearch}
                 onChange={(e) => setGlobalSearch(e.target.value)}
-                placeholder='Search "fresh milk", "rice bag", "cooking oil" or "sugar"...'
+                placeholder='Search "fresh milk", "rice bag"...'
                 className="w-full bg-[#F4F6FB] border-2 border-gray-100 rounded-xl py-3 pl-12 pr-4 text-sm font-semibold focus:outline-none focus:bg-white focus:border-[#0C831F] shadow-inner transition-all placeholder-gray-400"
               />
             </div>
 
             {/* Right Side Utility Dashboard Controls */}
-            <div className="flex items-center space-x-4 shrink-0">
-              <Link to="/track" className="text-sm font-extrabold text-gray-700 hover:text-[#0C831F] bg-gray-100 hover:bg-green-50 px-4 py-2.5 rounded-xl transition-all border border-gray-200/60">
-                🚚 Track Order
+            <div className="flex items-center space-x-2 sm:space-x-4 shrink-0">
+              <Link to="/track" className="text-[10px] sm:text-sm font-extrabold text-gray-700 hover:text-[#0C831F] bg-gray-100 hover:bg-green-50 px-2.5 py-2 sm:px-4 sm:py-2.5 rounded-xl transition-all border border-gray-200/60 flex items-center">
+                <span className="mr-1">🚚</span>
+                <span className="hidden sm:inline">Track Order</span>
+                <span className="sm:hidden">Track</span>
               </Link>
               
               {/* Giant Flashing Green Blinkit Cart Box */}
               <button 
                 onClick={() => setIsCartOpen(true)}
-                className="bg-[#0C831F] hover:bg-[#0a6d1a] text-white px-5 py-3 rounded-xl font-black flex items-center space-x-4 shadow-md hover:shadow-lg transition-all active:scale-97 border-b-4 border-green-900"
+                className="bg-[#0C831F] hover:bg-[#0a6d1a] text-white px-3 py-2 sm:px-5 sm:py-3 rounded-xl font-black flex items-center space-x-1.5 sm:space-x-4 shadow-md hover:shadow-lg transition-all active:scale-97 border-b-4 border-green-900 shrink-0"
               >
-                <span className="text-xl">🛒</span>
+                <span className="text-base sm:text-xl">🛒</span>
                 {totalItemsCount > 0 ? (
-                  <div className="text-left text-xs leading-none space-y-0.5">
-                    <p className="font-black text-yellow-300 uppercase tracking-wider">{totalItemsCount} Items Placed</p>
-                    <p className="text-base font-extrabold">₹{cartTotal}</p>
+                  <div className="text-left leading-none flex items-center sm:block">
+                    <p className="hidden sm:block font-black text-yellow-300 text-[10px] uppercase tracking-wider mb-0.5">{totalItemsCount} Items Placed</p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="sm:hidden bg-white text-[#0C831F] px-1.5 py-0.5 rounded text-[10px]">{totalItemsCount}</span>
+                      <p className="text-sm sm:text-base font-extrabold">₹{cartTotal}</p>
+                    </div>
                   </div>
                 ) : (
-                  <span className="text-sm font-black tracking-wide">My Basket</span>
+                  <span className="text-xs sm:text-sm font-black tracking-wide">Basket</span>
                 )}
               </button>
             </div>
           </div>
 
           {/* Mobile Embedded Search Strip */}
-          <div className="p-3 bg-white border-t border-gray-100 sm:hidden">
+          <div className="p-2 sm:p-3 bg-white border-t border-gray-100 sm:hidden">
             <div className="relative">
-              <span className="absolute left-3 top-2.5 text-sm">🔍</span>
+              <span className="absolute left-3 top-2 text-sm">🔍</span>
               <input
                 type="text"
                 value={globalSearch}
                 onChange={(e) => setGlobalSearch(e.target.value)}
-                placeholder="Search for groceries and village essentials..."
-                className="w-full bg-gray-100 border rounded-xl py-2.5 pl-9 pr-4 text-xs font-semibold focus:outline-none"
+                placeholder="Search village essentials..."
+                className="w-full bg-gray-100 border rounded-xl py-2 pl-9 pr-4 text-xs font-semibold focus:outline-none"
               />
             </div>
           </div>
         </header>
 
         {/* Global Body Container */}
-        <main className="flex-grow max-w-7xl w-full mx-auto p-4 md:py-6">
+        <main className="flex-grow max-w-7xl w-full mx-auto p-2 sm:p-4 md:py-6">
           <Routes>
             <Route 
               path="/" 
