@@ -27,17 +27,14 @@ function Checkout({ cart, clearCart }) {
 
     setLoading(true);
 
-    // 1. Generate standard deep-link URI schema configuration parameters
     const upiAddress = '9059907938@ybl';
     const merchantName = encodeURIComponent('Village Mart');
     const transactionNote = encodeURIComponent(`Order for ${formData.name}`);
     const amount = totalAmount.toFixed(2);
 
-    // Standard cross-platform string protocol query string layout
     const upiUrl = `upi://pay?pa=${upiAddress}&pn=${merchantName}&am=${amount}&tn=${transactionNote}&cu=INR`;
 
     try {
-      // 2. Log delivery model records to backend system architecture securely first
       const orderPayload = {
         customer_name: formData.name,
         customer_phone: formData.phone,
@@ -53,13 +50,8 @@ function Checkout({ cart, clearCart }) {
       const response = await API.post('orders/', orderPayload);
 
       if (response.status === 201 || response.status === 200) {
-        // 3. Clear shopping context memory storage pools
         clearCart();
-
-        // 4. Fire device native application route switcher interface 
         window.location.href = upiUrl;
-
-        // 5. Route UI tracker records directly to success completion board banner
         navigate('/order-status', { state: { success: true, orderId: response.data.id } });
       }
     } catch (error) {
@@ -84,10 +76,10 @@ function Checkout({ cart, clearCart }) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto mt-2 grid grid-cols-1 md:grid-cols-5 gap-4 items-start pb-12">
+    <div className="max-w-4xl mx-auto mt-2 grid grid-cols-1 lg:grid-cols-5 gap-4 items-start pb-12 px-2 sm:px-0">
       
       {/* LEFT INPUT COLUMN BLOCK: Delivery Shipping Context Credentials */}
-      <div className="bg-white border-2 border-gray-100 rounded-2xl p-5 shadow-xs md:col-span-3">
+      <div className="bg-white border-2 border-gray-100 rounded-2xl p-5 shadow-xs lg:col-span-3 w-full">
         <h2 className="text-sm font-black uppercase text-gray-900 tracking-wider border-b pb-2 mb-4 flex items-center space-x-2">
           <span>📍</span> <span>Delivery Address Details</span>
         </h2>
@@ -133,7 +125,6 @@ function Checkout({ cart, clearCart }) {
             ></textarea>
           </div>
 
-          {/* DYNAMIC INSTANT PAY SUBMIT ACTION PANEL TRIGGER BUTTON */}
           <button
             type="submit"
             disabled={loading}
@@ -145,13 +136,13 @@ function Checkout({ cart, clearCart }) {
       </div>
 
       {/* RIGHT DISPLAY SIDEBAR SUMMARY PANEL COLUMN BLOCK */}
-      <div className="bg-gradient-to-b from-gray-50 to-white border-2 border-gray-100 rounded-2xl p-4 shadow-xs md:col-span-2 space-y-4">
+      <div className="bg-gradient-to-b from-gray-50 to-white border-2 border-gray-100 rounded-2xl p-4 shadow-xs lg:col-span-2 w-full space-y-4">
         <h3 className="text-xs font-black uppercase text-gray-500 tracking-widest border-b pb-1.5">Basket Ledger Summary</h3>
         
         <div className="max-h-52 overflow-y-auto space-y-2.5 no-scrollbar pr-1">
           {cart.map((item) => (
             <div key={item.id} className="flex justify-between items-center text-xs border-b border-gray-100 pb-2">
-              <div className="truncate max-w-[160px]">
+              <div className="truncate max-w-[60%]">
                 <p className="font-black text-gray-800 truncate">{item.name}</p>
                 <p className="text-[10px] font-bold text-gray-400 mt-0.5">Qty: {item.quantity} × ₹{parseFloat(item.price).toFixed(0)}</p>
               </div>
