@@ -10,9 +10,11 @@ urlpatterns = [
     path('api/', include('orders.urls')),
 ]
 
+# Force Django to serve BOTH static layouts and media uploads in production
 if not settings.DEBUG:
     urlpatterns += [
         re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
+        re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     ]
 else:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

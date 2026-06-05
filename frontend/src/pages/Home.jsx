@@ -143,14 +143,19 @@ function Home({ addToCart, cart, updateQuantity, globalSearch }) {
             {filteredProducts.map((product) => {
               const qtyInCart = getItemQuantityInCart(product.id);
               
+              // Build standard dynamic image url source path logic targeting cloud media layers
+              const imageUrl = product.image 
+                ? (product.image.startsWith('http') ? product.image : `https://villagemart-9wtl.onrender.com${product.image}`)
+                : null;
+              
               return (
                 <div key={product.id} className="border-2 border-gray-100 rounded-2xl p-3 bg-white flex flex-col justify-between hover:border-yellow-400 transition-all hover:shadow-md relative group">
                   
                   {/* Media View Frame Container */}
                   <div className="w-full aspect-square rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100 flex items-center justify-center text-5xl select-none">
-                    {product.image ? (
+                    {imageUrl ? (
                       <img 
-                        src={product.image} 
+                        src={imageUrl} 
                         alt={product.name} 
                         className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-104"
                       />
