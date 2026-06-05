@@ -41,18 +41,26 @@ function Checkout({ cart, clearCart }) {
         total_amount: totalAmount
       };
 
-      await API.post('orders/', orderPayload);
+      const response = await API.post('orders/', orderPayload);
       
       clearCart();
       
-      window.location.href = upiUrl;
+      navigate('/order-status', { 
+        replace: true, 
+        state: { 
+          success: true, 
+          orderId: response.data.id || Math.floor(Math.random() * 90000) + 10000,
+          amount: totalAmount,
+          name: formData.name
+        } 
+      });
       
-      alert("Order placed successfully! Redirecting to payment...");
-      navigate('/');
+      setTimeout(() => {
+        window.location.href = upiUrl;
+      }, 500);
+
     } catch (error) {
       console.error("Checkout API error log trace context:", error.response?.data || error.message);
-      
-      // Fallback direct redirection route trigger to process immediate collection safely
       window.location.href = upiUrl;
     } finally {
       setLoading(false);
@@ -75,7 +83,6 @@ function Checkout({ cart, clearCart }) {
     <div className="w-full max-w-4xl mx-auto mt-2 px-3 pb-12">
       <div className="flex flex-col lg:flex-row gap-4 items-start w-full">
         
-        {/* DELIVERY METRICS DATA FIELD CONTEXT CONTAINER PANEL */}
         <div className="bg-white border-2 border-gray-100 rounded-2xl p-5 shadow-xs w-full lg:w-3/5 order-1">
           <h2 className="text-sm font-black uppercase text-gray-900 tracking-wider border-b pb-2 mb-4 flex items-center space-x-2">
             <span>📍</span> <span>Delivery Address Details</span>
@@ -132,7 +139,6 @@ function Checkout({ cart, clearCart }) {
           </form>
         </div>
 
-        {/* LEDGER SUMMARY CONTAINER PANEL */}
         <div className="bg-gradient-to-b from-gray-50 to-white border-2 border-gray-100 rounded-2xl p-4 shadow-xs w-full lg:w-2/5 order-2 space-y-4">
           <h3 className="text-xs font-black uppercase text-gray-500 tracking-widest border-b pb-1.5">Basket Ledger Summary</h3>
           
