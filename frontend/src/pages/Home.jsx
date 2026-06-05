@@ -54,20 +54,11 @@ function Home({ addToCart, cart, updateQuantity, globalSearch }) {
     const lower = name.toLowerCase();
     if (lower.includes('milk') || lower.includes('dairy')) return '🥛';
     if (lower.includes('vegetable') || lower.includes('fruit')) return '🥦';
-    if (lower.includes('rice') || lower.includes('grain') || lower.includes('dal')) return '🌾';
+    if (lower.includes('rice') || lower.includes('grain') || lower.includes('dal') || lower.includes('food')) return '🌾';
     if (lower.includes('oil') || lower.includes('ghee')) return '🛢️';
     if (lower.includes('snack') || lower.includes('biscuit')) return '🍪';
     if (lower.includes('drink') || lower.includes('juice')) return '🧃';
     return '📦';
-  };
-
-  // Safe fallback imagery layout dictionary maps
-  const getFallbackProductImage = (name) => {
-    const lower = name.toLowerCase();
-    if (lower.includes('milk')) return 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=500&q=80';
-    if (lower.includes('biscuit') || lower.includes('good day')) return 'https://images.unsplash.com/photo-1558961359-fa3f2001a704?w=500&q=80';
-    if (lower.includes('snack') || lower.includes('chips')) return 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=500&q=80';
-    return 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=500&q=80';
   };
 
   return (
@@ -144,10 +135,9 @@ function Home({ addToCart, cart, updateQuantity, globalSearch }) {
             {filteredProducts.map((product) => {
               const qtyInCart = getItemQuantityInCart(product.id);
               
-              // Smart URL Builder switches cleanly to backup strings if file returns empty or broken paths
-              let finalImageUrl = getFallbackProductImage(product.name);
+              let imageUrl = null;
               if (product.image && !product.image.includes('null') && product.image !== "") {
-                finalImageUrl = product.image.startsWith('http') 
+                imageUrl = product.image.startsWith('http') 
                   ? product.image 
                   : `https://villagemart-9wtl.onrender.com${product.image}`;
               }
@@ -156,12 +146,13 @@ function Home({ addToCart, cart, updateQuantity, globalSearch }) {
                 <div key={product.id} className="border-2 border-gray-100 rounded-2xl p-3 bg-white flex flex-col justify-between hover:border-yellow-400 transition-all hover:shadow-md relative group">
                   
                   <div className="w-full aspect-square rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100 flex items-center justify-center text-5xl select-none">
-                    <img 
-                      src={finalImageUrl} 
-                      alt={product.name} 
-                      onError={(e) => { e.target.src = getFallbackProductImage(product.name); }}
-                      className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-104"
-                    />
+                    {imageUrl ? (
+                      <img 
+                        src={imageUrl} 
+                        alt={product.name} 
+                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-104"
+                      />
+                    ) : "🌾"}
                     
                     {product.is_available && (
                       <span className="absolute left-2 top-2 bg-[#FFF] text-black text-[9px] font-black uppercase tracking-tighter px-2 py-1 rounded-md border-2 border-yellow-300 shadow-xs flex items-center space-x-1">
