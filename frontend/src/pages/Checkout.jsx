@@ -34,7 +34,6 @@ function Checkout({ cart, clearCart }) {
     const upiUrl = `upi://pay?pa=${upiAddress}&pn=${merchantName}&am=${amount}&tn=${transactionNote}&cu=INR`;
 
     try {
-      // Streamlined minimal payload layout to pass Django validation guards smoothly
       const orderPayload = {
         customer_name: formData.name,
         customer_phone: formData.phone,
@@ -42,12 +41,10 @@ function Checkout({ cart, clearCart }) {
         total_amount: totalAmount
       };
 
-      // Create order entry inside backend database layers
       await API.post('orders/', orderPayload);
       
       clearCart();
       
-      // Open native phone payment application
       window.location.href = upiUrl;
       
       alert("Order placed successfully! Redirecting to payment...");
@@ -55,7 +52,6 @@ function Checkout({ cart, clearCart }) {
     } catch (error) {
       console.error("Checkout API error log trace context:", error.response?.data || error.message);
       alert("Failed to initialize checkout sequence. Redirecting to instant payment app layout...");
-      // Fallback direct redirection route trigger to process immediate collection safely
       window.location.href = upiUrl;
     } finally {
       setLoading(false);
@@ -119,6 +115,7 @@ function Checkout({ cart, clearCart }) {
                 required
                 rows="3"
                 value={formData.address}
+                onChange={handleInputChange} /* <--- FIXED: Added onChange handler back */
                 placeholder="House Number, Street Name, Landmark details..." 
                 className="w-full border-2 border-gray-100 rounded-xl px-3 py-2.5 text-xs font-bold text-gray-800 focus:border-[#0C831F] outline-none transition-all resize-none"
               ></textarea>
