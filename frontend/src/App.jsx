@@ -65,7 +65,7 @@ function App() {
             {/* Branding Logo Block */}
             <div className="flex items-center space-x-2 sm:space-x-6 shrink-0">
               <Link to="/" className="text-xl sm:text-3xl font-extrabold tracking-tighter select-none flex items-center">
-                <span className="bg-[#F7D10A] text-black px-2 sm:px-3 py-1 rounded-xl shadow-xs border border-black/10">village</span>
+                <span className="bg-[#F7D10A] text-black px-2 sm:px-3 py-1 rounded-xl shadow-xs border border-black/10">Kunavaram</span>
                 <span className="text-[#0C831F] font-black ml-1 sm:ml-1.5">mart</span>
               </Link>
               
