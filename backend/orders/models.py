@@ -63,3 +63,43 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name if self.product else 'Unknown Product'}"
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.core.mail import send_mail
+import os
+
+@receiver(post_save, sender=Order)
+def send_new_order_email_alert(sender, instance, created, **kwargs):
+    """
+    Fires instantly whenever an order row object finishes saving down to the permanent Neon database matrix layers.
+    """
+    if created:
+        recipient = os.environ.get('NOTIFICATION_EMAIL')
+        if not recipient:
+            return
+            
+        subject = f"🔔 NEW ORDER RECEIVED — Order #{instance.id}"
+        
+        message_body = (
+            f"Hello Boss,\n\n"
+            f"Someone just placed an order on Kunavaram Mart!\n\n"
+            f"--- ORDER SUMMARY ---\n"
+            f"Order ID: #{instance.id}\n"
+            f"Customer Name: {instance.customer_name}\n"
+            f"Mobile Number: {instance.phone}\n"
+            f"Street/Area: {instance.street}\n"
+            f"Village: {instance.village}\n"
+            f"Total Bill Amount: ₹{instance.total_amount}\n\n"
+            f"Check your Django Admin board to verify the UPI payment tracking details and process the shipment delivery run."
+        )
+        
+        try:
+            send_mail(
+                subject=subject,
+                message=message_body,
+                from_email=None, # Automatically defaults to DEFAULT_FROM_EMAIL
+                recipient_list=[recipient],
+                fail_silently=False,
+            )
+        except Exception as e:
+            print(f"SMTP Notification Error Log Matrix trace: {e}")
