@@ -71,17 +71,20 @@ class OrderItem(models.Model):
 
 
 def email_worker(subject, message_body, recipient):
-    """Isolated background thread worker to prevent SMTP from slowing down checkout."""
+    """Isolated background thread worker with aggressive logging."""
+    print(f"🚀 [EMAIL THREAD] Starting attempt to send email to {recipient}...")
     try:
+        # Changed fail_silently to False so it forces the exact error to print
         send_mail(
             subject=subject,
             message=message_body,
             from_email=None, 
             recipient_list=[recipient],
-            fail_silently=True,
+            fail_silently=False, 
         )
+        print("✅ [EMAIL THREAD] SUCCESS! Email was accepted by Google SMTP.")
     except Exception as e:
-        print(f"Background SMTP Email Error: {e}")
+        print(f"❌ [EMAIL THREAD CRASH] Google rejected the email. Exact reason: {e}")
 
 
 # AUTOMATED EMAIL SIGNAL ENGINE
