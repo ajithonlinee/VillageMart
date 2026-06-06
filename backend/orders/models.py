@@ -1,5 +1,9 @@
 from django.db import models
 from products.models import Product
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.core.mail import send_mail
+import os
 
 class CustomerOrder(models.Model):
     # Payment Status Choices
@@ -63,15 +67,13 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name if self.product else 'Unknown Product'}"
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.core.mail import send_mail
-import os
 
-@receiver(post_save, sender=Order)
+
+# AUTOMATED EMAIL SIGNAL ENGINE
+@receiver(post_save, sender=CustomerOrder) # FIXED: Pointed sender explicitly to CustomerOrder
 def send_new_order_email_alert(sender, instance, created, **kwargs):
     """
-    Fires instantly whenever an order row object finishes saving down to the permanent Neon database matrix layers.
+    Fires instantly whenever a CustomerOrder row finishes saving down to the database.
     """
     if created:
         recipient = os.environ.get('NOTIFICATION_EMAIL')
@@ -97,7 +99,7 @@ def send_new_order_email_alert(sender, instance, created, **kwargs):
             send_mail(
                 subject=subject,
                 message=message_body,
-                from_email=None, # Automatically defaults to DEFAULT_FROM_EMAIL
+                from_email=None, 
                 recipient_list=[recipient],
                 fail_silently=False,
             )
