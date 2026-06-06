@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.mail import send_mail
 import os
+import threading # Added to completely offload email execution from the database thread
 
 class CustomerOrder(models.Model):
     # Payment Status Choices
@@ -69,11 +70,25 @@ class OrderItem(models.Model):
         return f"{self.quantity} x {self.product.name if self.product else 'Unknown Product'}"
 
 
+def email_worker(subject, message_body, recipient):
+    """Isolated background thread worker to prevent SMTP from slowing down checkout."""
+    try:
+        send_mail(
+            subject=subject,
+            message=message_body,
+            from_email=None, 
+            recipient_list=[recipient],
+            fail_silently=True,
+        )
+    except Exception as e:
+        print(f"Background SMTP Email Error: {e}")
+
+
 # AUTOMATED EMAIL SIGNAL ENGINE
 @receiver(post_save, sender=CustomerOrder)
 def send_new_order_email_alert(sender, instance, created, **kwargs):
     """
-    Fires instantly whenever a CustomerOrder row finishes saving down to the database.
+    Fires instantly whenever a CustomerOrder row finishes saving.
     """
     if created:
         recipient = os.environ.get('NOTIFICATION_EMAIL')
@@ -95,13 +110,6 @@ def send_new_order_email_alert(sender, instance, created, **kwargs):
             f"Check your Django Admin board to verify the UPI payment tracking details and process the shipment delivery run."
         )
         
-        try:
-            send_mail(
-                subject=subject,
-                message=message_body,
-                from_email=None, 
-                recipient_list=[recipient],
-                fail_silently=True, # FIXED: Prevents slow mail connections from blocking or crashing checkout
-            )
-        except Exception as e:
-            print(f"SMTP Notification Error Log Matrix trace: {e}")
+        # Start email processing in a separate background thread
+        # This keeps database execution clean and prevents API network timeouts
+        threading.Thread(target=email_worker, args=(subject, message_body, recipient)).start()
