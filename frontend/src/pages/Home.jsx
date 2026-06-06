@@ -170,9 +170,9 @@ function Home({ addToCart, cart, updateQuantity, globalSearch }) {
                       ) : (
                         <button
                           onClick={() => addToCart(product)}
-                          className="border-2 border-[#0C831F] bg-green-50/40 hover:bg-[#0C831F] text-[#0C831F] hover:text-white px-2 md:px-4 h-8 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-wider transition-all truncate"
+                          className="border-2 border-[#0C831F] bg-green-50/40 hover:bg-[#0C831F] text-[#0C831F] hover:text-white px-2 md:px-4 h-8 rounded-xl text-[10px] md:text-xs font-black uppercase whitespace-nowrap shrink-0 transition-all"
                         >
-                          Add Item
+                          ADD ITEM
                         </button>
                       )}
                     </div>
