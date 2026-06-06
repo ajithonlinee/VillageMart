@@ -70,7 +70,7 @@ class OrderItem(models.Model):
 
 
 # AUTOMATED EMAIL SIGNAL ENGINE
-@receiver(post_save, sender=CustomerOrder) # FIXED: Pointed sender explicitly to CustomerOrder
+@receiver(post_save, sender=CustomerOrder)
 def send_new_order_email_alert(sender, instance, created, **kwargs):
     """
     Fires instantly whenever a CustomerOrder row finishes saving down to the database.
@@ -101,7 +101,7 @@ def send_new_order_email_alert(sender, instance, created, **kwargs):
                 message=message_body,
                 from_email=None, 
                 recipient_list=[recipient],
-                fail_silently=False,
+                fail_silently=True, # FIXED: Prevents slow mail connections from blocking or crashing checkout
             )
         except Exception as e:
             print(f"SMTP Notification Error Log Matrix trace: {e}")
