@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'react-redux'; // Note: changing to raw axios matches your setup
-import axiosInstance from 'axios'; 
+import API from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
-// Changed prop name from cartItems to cart to match your App.jsx state exactly
 const Checkout = ({ cart, updateQuantity, clearCart }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -52,7 +50,8 @@ const Checkout = ({ cart, updateQuantity, clearCart }) => {
       handler: async function (response) {
         setLoading(true);
         try {
-          const verifyRes = await axiosInstance.post(`https://villagemart-9wtl.onrender.com/api/verify-payment/`, {
+          // Uses your pre-configured base API utility routing setup
+          const verifyRes = await API.post('verify-payment/', {
             razorpay_order_id: orderData.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature,
@@ -115,7 +114,8 @@ const Checkout = ({ cart, updateQuantity, clearCart }) => {
     };
 
     try {
-      const orderRes = await axiosInstance.post(`https://villagemart-9wtl.onrender.com/api/orders/`, payload);
+      // Replaced with native clean API configuration utility tool
+      const orderRes = await API.post('orders/', payload);
       if (orderRes.status === 201) {
         loadRazorpayModal(orderRes.data);
       }
