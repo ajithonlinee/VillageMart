@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,12 +7,23 @@ const Checkout = ({ cartItems, totalAmount, clearCart, backendUrl }) => {
   const [formData, setFormData] = useState({
     customer_name: '',
     phone: '',
-    house_number: '',
+    house_number: 'N/A', // Default to avoid backend structure conflicts
     street: '',
-    village: 'Bhimavaram',
+    village: 'Kunavaram',
     landmark: '',
   });
   const [loading, setLoading] = useState(false);
+
+  // DYNAMIC SCRIPT INJECTION: Loads Razorpay SDK directly through React code
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -20,18 +31,23 @@ const Checkout = ({ cartItems, totalAmount, clearCart, backendUrl }) => {
   };
 
   const loadRazorpayModal = (orderData) => {
+    if (!window.Razorpay) {
+      alert("Razorpay SDK failed to load. Please check your internet connection.");
+      setLoading(false);
+      return;
+    }
+
     const options = {
-      key: orderData.razorpay_key,
+      key: orderData.razorpay_key || "rzp_test_your_key_here",
       amount: orderData.total_amount * 100, // Amount in paise
       currency: "INR",
-      name: "Your Store Name",
-      description: "Order Payment",
+      name: "Kunavaram Mart",
+      description: "Grocery Order Payment",
       order_id: orderData.razorpay_order_id,
       handler: async function (response) {
         setLoading(true);
         try {
-          // Send signature verification details to backend
-          const verifyRes = await axios.post(`${backendUrl}/api/verify-payment/`, {
+          const verifyRes = await axios.post(`https://villagemart-9wtl.onrender.com/api/verify-payment/`, {
             razorpay_order_id: orderData.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature,
@@ -39,10 +55,11 @@ const Checkout = ({ cartItems, totalAmount, clearCart, backendUrl }) => {
 
           if (verifyRes.status === 200) {
             clearCart();
-            navigate(`/track?order_id=${orderData.id}&phone=${formData.phone}`);
+            alert("Payment Successful!");
+            navigate('/track', { state: { orderId: orderData.id, phone: formData.phone } });
           }
         } catch (error) {
-          alert("Payment verification failed. Please contact support.");
+          alert("Payment verification failed. Please check your tracking screen.");
         } finally {
           setLoading(false);
         }
@@ -52,12 +69,12 @@ const Checkout = ({ cartItems, totalAmount, clearCart, backendUrl }) => {
         contact: formData.phone,
       },
       theme: {
-        color: "#3B82F6", // Primary brand color
+        color: "#0C831F", // Kunavaram Mart Green Brand Color
       },
       modal: {
         ondismiss: function () {
           setLoading(false);
-          alert("Payment cancelled by user.");
+          alert("Payment cancelled.");
         }
       }
     };
@@ -68,8 +85,13 @@ const Checkout = ({ cartItems, totalAmount, clearCart, backendUrl }) => {
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    if (cartItems.length === 0) {
-      alert("Your cart is empty!");
+    
+    // Safety check to parse cart elements accurately
+    const activeCart = cartItems || [];
+    const activeTotal = totalAmount || 0;
+
+    if (activeCart.length === 0) {
+      alert("Your basket is empty!");
       return;
     }
     setLoading(true);
@@ -81,8 +103,8 @@ const Checkout = ({ cartItems, totalAmount, clearCart, backendUrl }) => {
       street: formData.street,
       village: formData.village,
       landmark: formData.landmark,
-      total_amount: totalAmount,
-      items: cartItems.map(item => ({
+      total_amount: activeTotal,
+      items: activeCart.map(item => ({
         product: item.id,
         quantity: item.quantity,
         price: item.price
@@ -90,108 +112,92 @@ const Checkout = ({ cartItems, totalAmount, clearCart, backendUrl }) => {
     };
 
     try {
-      // 1. Submit order details to backend to generate Razorpay Order ID
-      const orderRes = await axios.post(`${backendUrl}/api/orders/`, payload);
-      
+      const orderRes = await axios.post(`https://villagemart-9wtl.onrender.com/api/orders/`, payload);
       if (orderRes.status === 201) {
-        // 2. Open the checkout modal
         loadRazorpayModal(orderRes.data);
       }
     } catch (error) {
-      console.error("Order creation failed:", error);
-      alert("Failed to initialize payment. Please check your network and try again.");
+      console.error("Order payload failed:", error.response?.data || error.message);
+      alert("Failed to initialize payment order check logs.");
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-6">Checkout</h2>
+    <div className="max-w-xl mx-auto bg-white border border-gray-200 rounded-2xl p-6 shadow-sm my-4">
+      <h2 className="text-xl font-black text-gray-800 border-b pb-3 mb-4">📍 Delivery & Checkout</h2>
       <form onSubmit={handlePlaceOrder} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Full Name</label>
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Full Name *</label>
           <input
             type="text"
             name="customer_name"
             value={formData.customer_name}
             onChange={handleInputChange}
             required
-            className="w-full border p-2 rounded"
+            className="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none text-sm"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Phone Number</label>
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Mobile Number *</label>
           <input
             type="tel"
             name="phone"
             value={formData.phone}
             onChange={handleInputChange}
             required
-            className="w-full border p-2 rounded"
+            className="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none text-sm"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Street / Area Name *</label>
+          <input
+            type="text"
+            name="street"
+            value={formData.street}
+            onChange={handleInputChange}
+            required
+            className="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none text-sm"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">House/Door No.</label>
-            <input
-              type="text"
-              name="house_number"
-              value={formData.house_number}
-              onChange={handleInputChange}
-              required
-              className="w-full border p-2 rounded"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Street</label>
-            <input
-              type="text"
-              name="street"
-              value={formData.street}
-              onChange={handleInputChange}
-              required
-              className="w-full border p-2 rounded"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Village/City</label>
+            <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Village / Town *</label>
             <input
               type="text"
               name="village"
               value={formData.village}
               onChange={handleInputChange}
               required
-              className="w-full border p-2 rounded"
+              className="w-full p-2.5 border bg-gray-50 rounded-xl text-sm"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Landmark (Optional)</label>
+            <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Famous Landmark</label>
             <input
               type="text"
               name="landmark"
               value={formData.landmark}
               onChange={handleInputChange}
-              className="w-full border p-2 rounded"
+              className="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none text-sm"
             />
           </div>
         </div>
 
         <div className="border-t pt-4 mt-6">
-          <div className="flex justify-between text-xl font-bold mb-4">
-            <span>Total Payable:</span>
-            <span>₹{totalAmount}</span>
+          <div className="flex justify-between items-center text-lg font-black text-gray-900 mb-4">
+            <span>Grand Total:</span>
+            <span>₹{totalAmount || 0}</span>
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded font-semibold hover:bg-blue-700 transition disabled:bg-gray-400"
+            className="w-full bg-[#0C831F] hover:bg-[#0a6d1a] text-white font-black py-3 rounded-xl transition-all shadow-md text-center border-b-4 border-green-900 active:scale-99 disabled:bg-gray-400"
           >
-            {loading ? "Processing Payment..." : "Pay Securely with Razorpay"}
+            {loading ? "Opening Secure Gateway..." : `Pay Securely with Razorpay`}
           </button>
         </div>
       </form>
